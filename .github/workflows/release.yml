@@ -38,10 +38,25 @@ jobs:
           cd artifacts
           tar czf ../deepl2api-linux-amd64.tar.gz deepl2api
 
+      - name: Generate release notes
+        id: generate_notes
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/releases/generate-notes" \
+            -f tag_name="${{ github.ref_name }}" \
+            --jq '.body' > release_notes.md || {
+            echo "API release notes failed, using git log fallback..."
+            echo "## What's Changed" > release_notes.md
+            git log "$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || git rev-list --max-parents=0 HEAD)"..HEAD --oneline --format="* %s (%h)" >> release_notes.md
+          }
+
       - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release ${{ github.ref_name }}
-          generate_release_notes: true
-          files: |
-            deepl2api-linux-amd64.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "Release ${{ github.ref_name }}" \
+            --notes-file release_notes.md \
+            "deepl2api-linux-amd64.tar.gz"
