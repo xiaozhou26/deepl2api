@@ -362,13 +362,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_state(state);
 
     let addr = "127.0.0.1:9000";
-    println!("[*] Server listening on http://{}", addr);
-    println!();
-    println!("  Example:");
-    println!("    curl 'http://{}/translate' \\", addr);
-    println!("      --header 'Content-Type: application/json' \\");
-    println!("      --data '{{\"text\":\"Hello, world!\",\"source_lang\":\"EN\",\"target_lang\":\"ZH\"}}'");
-    println!();
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
