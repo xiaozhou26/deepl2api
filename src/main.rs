@@ -170,7 +170,19 @@ impl DeepLClient {
 
         let builder = if let Some(ref p) = proxy {
             if !p.is_empty() {
-                builder.proxy(wreq::Proxy::https(p)?)
+                if p.starts_with("socks5h://") || p.starts_with("socks5://")
+                    || p.starts_with("socks4a://") || p.starts_with("socks4://")
+                {
+                    // SOCKS proxies handle all traffic (HTTP + HTTPS)
+                    builder.proxy(wreq::Proxy::all(p)?)
+                } else if p.starts_with("http://") {
+                    builder.proxy(wreq::Proxy::http(p)?)
+                } else if p.starts_with("https://") {
+                    builder.proxy(wreq::Proxy::https(p)?)
+                } else {
+                    // Default to HTTPS proxy for backward compatibility
+                    builder.proxy(wreq::Proxy::https(p)?)
+                }
             } else {
                 builder
             }
@@ -335,11 +347,17 @@ async fn handle_translate(
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = dotenvy::dotenv(); // load .env file if present
+
     let proxy = std::env::var("PROXY_LIST").ok();
+    let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "9000".to_string());
+    let addr = format!("{}:{}", host, port);
 
     println!("[*] Initializing DeepL client...");
     let client = DeepLClient::new(proxy).await?;
     println!("[*] Client ready (cookies warmed)");
+    println!("[*] Listening on {}", addr);
 
     let state = AppState {
         client: Arc::new(client),
@@ -361,9 +379,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(cors)
         .with_state(state);
 
-    let addr = "127.0.0.1:9000";
-
-    let listener = tokio::net::TcpListener::bind(addr).await?;
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
     axum::serve(listener, app).await?;
 
     Ok(())

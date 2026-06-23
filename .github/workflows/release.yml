@@ -29,12 +29,11 @@ jobs:
         run: |
           mkdir -p artifacts
           cp target/x86_64-unknown-linux-gnu/release/deepl2api artifacts/
-          cp README.md API.md CLAUDE.md artifacts/
 
       - name: Create archive
         run: |
           cd artifacts
-          tar czf ../deepl2api-linux-amd64.tar.gz deepl2api README.md API.md CLAUDE.md
+          tar czf ../deepl2api-linux-amd64.tar.gz deepl2api
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

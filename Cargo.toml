@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
-wreq = { version = "6.0.0-rc.29", features = ["json", "cookies", "brotli", "gzip"] }
+wreq = { version = "6.0.0-rc.29", features = ["json", "cookies", "brotli", "gzip", "socks"] }
 wreq-util = "3.0.0-rc.13"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
@@ -12,3 +12,4 @@ serde_json = "1"
 rand = "0.8"
 axum = "0.8"
 tower-http = { version = "0.6", features = ["cors", "set-header"] }
+dotenvy = "0.15"
