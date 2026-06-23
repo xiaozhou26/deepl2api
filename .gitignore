@@ -1,0 +1,30 @@
+# Rust build output
+/target/
+
+# Cargo lock file (include if library, exclude if application)
+# Cargo.lock is recommended for applications, but optional
+# Cargo.lock
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env.local
+
+# Claude Code config
+.claude/
+
+# Playwright artifacts
+.playwright-mcp/
+
+# RustRover / IntelliJ
+*.iml
