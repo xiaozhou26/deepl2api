@@ -36,7 +36,7 @@ curl 'http://127.0.0.1:9000/translate' \
 ### 构建
 
 ```bash
-git clone https://github.com/your-username/deepl2api.git
+git clone https://github.com/xiaozhou26/deepl2api.git
 cd deepl2api
 cargo build --release
 ```
